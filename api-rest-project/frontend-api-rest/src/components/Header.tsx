@@ -3,7 +3,7 @@
 export function Header() {
   return (
     <div className="">
-      <h1 className="text-center italic p-10 text-xl">Todo App With React + Laravel Rest Api</h1>
+      <h1 className="text-center italic p-10 text-xl font-semibold">Todo App With React + Laravel Rest Api</h1>
     </div>
 
   )

@@ -6,19 +6,25 @@ import { Tasks } from './components/Task'
 import { useTasks } from './hooks/useTask'
 
 function App() {
-  const { tasks, handleAddTask, handleDeleteTask, handleUpdateTask } = useTasks()
+  const {
+    tasks,
+    handleAddTask,
+    handleDeleteTask,
+    handleUpdateTask,
+    handleUpdateTaskState,
+  } = useTasks()
 
   return (
     <>
       <Header />
-      <Tasks 
-        tasks={tasks} 
-        onDeleteTask={handleDeleteTask} 
-        onUpdateTask={handleUpdateTask} 
+      <Tasks
+        tasks={tasks}
+        onDeleteTask={handleDeleteTask}
+        onUpdateTask={handleUpdateTask}
+        onUpdateTaskState={handleUpdateTaskState}
       />
     </>
   )
 }
 
 export default App
-

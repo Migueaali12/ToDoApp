@@ -1,5 +1,5 @@
-/* eslint-disable react/react-in-jsx-scope */
-import { Task } from '../types'
+/* eslint-disable react/prop-types */
+import { Task, TaskState } from '../types'
 import {
   SimpleGrid,
   Card,
@@ -18,7 +18,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
@@ -29,9 +28,10 @@ interface TasksProps {
   tasks: Task[]
   onDeleteTask: (id: number) => void
   onUpdateTask: (id: number, task: Task) => void
+  onUpdateTaskState: (id: number, state: TaskState) => void
 }
 
-export function Tasks({ tasks, onDeleteTask, onUpdateTask }: TasksProps) {
+export function Tasks({ tasks, onDeleteTask, onUpdateTask, onUpdateTaskState }: TasksProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
@@ -45,7 +45,7 @@ export function Tasks({ tasks, onDeleteTask, onUpdateTask }: TasksProps) {
             <CardBody>
               <Stack mt="6" spacing="3">
                 <Heading size="md">
-                  <Flex justifyContent={'space-between'}>
+                  <Flex fontWeight={'semibold'} justifyContent={'space-between'}>
                     {task.title}
                     <div>
                       <Button
@@ -79,11 +79,8 @@ export function Tasks({ tasks, onDeleteTask, onUpdateTask }: TasksProps) {
                   size="sm"
                   rounded={'sm'}
                   value={task.state}
-                  onChange={e =>
-                    onUpdateTask(task.id, {
-                      ...task,
-                      state: e.target.value as Task['state'],
-                    })
+                  onChange={(event) =>
+                    onUpdateTaskState(task.id, event.target.value as TaskState)
                   }
                 >
                   <option value="in_progress">En progreso</option>
@@ -99,14 +96,11 @@ export function Tasks({ tasks, onDeleteTask, onUpdateTask }: TasksProps) {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Editar Tarea</ModalHeader>
           <ModalCloseButton />
 
-          <ModalBody>{'hola payasines'}</ModalBody>
+          <ModalBody>{}</ModalBody>
 
-          <ModalFooter>
-            <Button variant="ghost">Secondary Action</Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

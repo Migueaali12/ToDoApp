@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from 'react'
-import { deleteTask, fetchTasks } from '../services/Tasks'
-import { Task, TaskList } from './../types.d'
+import { deleteTask, fetchTasks, updateTaskState } from '../services/Tasks'
+import { Task, TaskList, TaskState } from './../types.d'
 
 const initialState: State = {
   tasks: [],
@@ -10,6 +10,7 @@ type Action =
   | { type: 'INIT_TASKS'; payload: { tasks: TaskList } }
   | { type: 'DELETE_TASK'; payload: { id: number } }
   | { type: 'UPDATE_TASK'; payload: { id: number; task: Task } }
+  | { type: 'UPDATE_TASK_STATE'; payload: { id: number; state: TaskState } }
   | { type: 'ADD_TASK'; payload: { task: Task } }
 
 interface State {
@@ -42,10 +43,24 @@ export const reducer = (state: State, action: Action): State => {
   }
 
   if (action.type === 'UPDATE_TASK') {
+
     return {
       ...state,
       tasks: state.tasks.map(task =>
         task.id === action.payload.id ? action.payload.task : task
+      ),
+    }
+  }
+
+  if (action.type === 'UPDATE_TASK_STATE') {
+    // fetch al api
+    updateTaskState(action.payload.id, action.payload.state)
+    return {
+      ...state,
+      tasks: state.tasks.map(task =>
+        task.id === action.payload.id
+         ? {...task, state: action.payload.state }
+          : task
       ),
     }
   }
@@ -59,6 +74,7 @@ export const useTasks = (): {
   handleAddTask: (task: Task) => void
   handleDeleteTask: (id: number) => void
   handleUpdateTask: (id: number, task: Task) => void
+  handleUpdateTaskState: (id: number, state: TaskState) => void
 
 } => {
 
@@ -76,6 +92,10 @@ export const useTasks = (): {
     dispatch({ type: 'UPDATE_TASK', payload: { id, task } })
   }
 
+  const handleUpdateTaskState = (id: number, state: TaskState): void => {
+    dispatch({ type: 'UPDATE_TASK_STATE', payload: { id, state } })
+  }
+
   useEffect(() => {
     fetchTasks()
       .then(tasks => {
@@ -86,5 +106,5 @@ export const useTasks = (): {
       })
   }, [])
 
-  return { tasks, handleAddTask, handleDeleteTask, handleUpdateTask }
+  return { tasks, handleAddTask, handleDeleteTask, handleUpdateTask, handleUpdateTaskState }
 }
