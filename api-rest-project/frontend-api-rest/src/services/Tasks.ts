@@ -1,10 +1,15 @@
-import { TaskList, TaskState } from '../types'
+import { Task, TaskList, TaskState } from '../types'
+
+interface tasksReponse {
+  tasks: Task[]
+  status: number
+}
 
 export async function fetchTasks(): Promise<TaskList> {
   const res = await fetch('http://127.0.0.1:8000/api/task', {
     method: 'GET',
   })
-  const data = await res.json()
+  const data: tasksReponse = await res.json()
   return data.tasks
 }
 

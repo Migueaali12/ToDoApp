@@ -14,5 +14,4 @@ export enum TaskState {
 export type TaskId = Pick<Task, 'id'>
 export type TaskTitle = Pick<Task, 'title'>
 export type TaskText = Pick<Task, 'text'>
-
 export type TaskList = Task[]
