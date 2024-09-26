@@ -1,12 +1,18 @@
 import { createContext, useReducer } from 'react'
 import { TaskList, Task, TaskState } from '../types'
 import { initialState, taskReducer } from '../reducers/task'
-import { fetchTasks } from '../services/Tasks'
+import {
+  fetchAddTask,
+  fetchDeleteTask,
+  fetchTasks,
+  fetchUpdateTask,
+  fetchUpdateTaskState,
+} from '../services/Tasks'
 
 type TaskContextType = {
   tasks: TaskList
   getTask: () => void
-  addTask: (task: Task) => void
+  addTask: (title: string, text: string) => void
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
@@ -17,7 +23,7 @@ export const TaskContext = createContext<TaskContextType | null>(null)
 export const useTaskReducer = (): {
   tasks: TaskList
   getTask: () => void
-  addTask: (task: Task) => void
+  addTask: (title: string, text: string) => void
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
@@ -31,20 +37,54 @@ export const useTaskReducer = (): {
       })
       .catch(err => console.log(err))
   }
-  const addTask = (task: Task): void => {
-    dispatch({ type: 'ADD_TASK', payload: { task } })
+
+  const addTask = (title: string, text: string): void => {
+    fetchAddTask(title, text)
+      .then(task => {
+        if (task === null || task === undefined) {
+          throw new Error('No se pudo agregar la tarea')
+        }
+        dispatch({ type: 'ADD_TASK', payload: { task } })
+      })
+      .catch(err => {
+        console.error('Error al eliminar la tarea:', err)
+      })
   }
 
   const deleteTask = (id: number): void => {
-    dispatch({ type: 'DELETE_TASK', payload: { id } })
+    fetchDeleteTask(id)
+      .then(success => {
+        if (success) {
+          dispatch({ type: 'DELETE_TASK', payload: { id } })
+        }
+      })
+      .catch(err => {
+        console.error('Error al eliminar la tarea:', err)
+      })
   }
 
   const updateTask = (id: number, task: Task): void => {
-    dispatch({ type: 'UPDATE_TASK', payload: { id, task } })
+    fetchUpdateTask(id, task)
+      .then(success => {
+        if (success) {
+          dispatch({ type: 'UPDATE_TASK', payload: { id, task } })
+        }
+      })
+      .catch(err => {
+        console.error('Error al actualizar la tarea:', err)
+      })
   }
 
   const updateTaskState = (id: number, state: TaskState): void => {
-    dispatch({ type: 'UPDATE_TASK_STATE', payload: { id, state } })
+    fetchUpdateTaskState(id, state)
+      .then(success => {
+        if (success) {
+          dispatch({ type: 'UPDATE_TASK_STATE', payload: { id, state } })
+        }
+      })
+      .catch(err => {
+        console.error('Error al actualizar el estado de la tarea:', err)
+      })
   }
 
   return {

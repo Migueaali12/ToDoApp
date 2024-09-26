@@ -11,8 +11,6 @@ import {
   ButtonGroup,
   Select,
   Text,
-  useDisclosure,
-  //useDisclosure,
 } from '@chakra-ui/react'
 import { MdDelete, MdEditSquare } from 'react-icons/md'
 import { Task, TaskState } from '../types'
@@ -20,16 +18,30 @@ import { useTasks } from '../hooks/useTask'
 import { TaskModal } from './Modal'
 import { useState } from 'react'
 
-function getTaskColor(state: string) {
-  switch (state) {
-    case 'completed':
-      return '#bfffc3'
-    case 'in_progress':
-      return '#feffbf'
-    case 'pending':
-      return '#f0f0f0'
-    default:
-      return 'inherit'
+function getTaskColor(state: string, styleProp: string) {
+  if (styleProp === 'bg') {
+    switch (state) {
+      case 'completed':
+        return '#bfffc3'
+      case 'in_progress':
+        return '#feffbf'
+      case 'pending':
+        return '#f0f0f0'
+      default:
+        return 'inherit'
+    }
+  }
+  if (styleProp === 'border') {
+    switch (state) {
+      case 'completed':
+        return 'green'
+      case 'in_progress':
+        return 'orange'
+      case 'pending':
+        return 'grey'
+      default:
+        return 'inherit'
+    }
   }
 }
 
@@ -50,7 +62,10 @@ export function TaskElement({ task }: { task: Task }) {
       <Card
         key={task.id}
         maxW="sm"
-        style={{ backgroundColor: getTaskColor(task.state) }}
+        style={{
+          backgroundColor: getTaskColor(task.state, 'bg'),
+          borderColor: getTaskColor(task.state, 'border'),
+        }}
         shadow={'md'}
       >
         <CardBody>
@@ -62,7 +77,7 @@ export function TaskElement({ task }: { task: Task }) {
                   <Button
                     bg="#3182ce"
                     size={'xs'}
-                    _hover={{ background: 'darkblue' }}
+                    _hover={{ background: '#225d94' }}
                     marginRight={'5px'}
                     onClick={() => deleteTask(task.id)}
                   >
@@ -71,7 +86,7 @@ export function TaskElement({ task }: { task: Task }) {
                   <Button
                     bg="#3182ce"
                     size={'xs'}
-                    _hover={{ background: 'darkblue' }}
+                    _hover={{ background: '#225d94' }}
                     onClick={openModal}
                   >
                     <Icon as={MdEditSquare} color={'white'} />
@@ -102,7 +117,9 @@ export function TaskElement({ task }: { task: Task }) {
         </CardFooter>
       </Card>
 
-      {isModalOpen && <TaskModal isOpen={isModalOpen} onClose={closeModal} />}
+      {isModalOpen && (
+        <TaskModal isOpen={isModalOpen} onClose={closeModal} task={task} />
+      )}
     </>
   )
 }
