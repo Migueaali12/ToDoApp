@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use phpDocumentor\Reflection\Types\Boolean;
 
+use function PHPSTORM_META\map;
+
 class taskController extends Controller
 {
     public function index()
@@ -198,42 +200,103 @@ class taskController extends Controller
         return response()->json($data, 200);
     }
 
-    public function toggleCompletedTask(Request $request)
-
+    public function filterByStatus(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
-            'isChecked' => 'required|in:YES,NO',
+            'state' => 'required|in:all,pending,in_progress,completed',
         ]);
 
         if ($validator->fails()) {
             $data = [
-                'message' => 'Error en la validacion de datos',
+                'message' => 'Error en la validacion de estados',
                 'errors' => $validator->errors(),
                 'status' => 400
             ];
             return response()->json($data, 400);
         }
 
-        $tasks = Task::all();
+        if ($request->state === 'all') {
+            $tasks = Task::all();
 
-        if ($request->isChecked === 'YES') {
-            foreach ($tasks as $task) {
-                $task->state = 'completed';
-                $task->save();
-            }
-        } else {
-            foreach ($tasks as $task) {
-                $task->state = 'pending';
-                $task->save();
-            }
+            $data = [
+                'tasks' => $tasks,
+                'status' => 200
+            ];
+    
+            return response()->json($data, 200);
+        }
+
+
+        $tasks = Task::where('state', $request->state)->get();
+
+        if ($tasks->isEmpty()) {
+            $data = [
+                'message' => 'No se encontraron tareas con el estado ' . $request,
+                'status' => 404
+            ];
+            return response()->json($data, 200);
         }
 
         $data = [
-            'message' => 'Todas las tareas han sido actualizadas a ' . ($request->isChecked === 'YES' ? 'completed' : 'pending'),
+            'tasks' => $tasks,
             'status' => 200
         ];
 
+        return response()->json($data, 200);
+    }
+
+    public function getPriority($state)
+    {
+        if ($state === 'pending') {
+            return 1;
+        } elseif ($state === 'in_progress') {
+            return 2;
+        } elseif ($state === 'completed') {
+            return 3;
+        } else {
+            return 4;
+        }
+    }
+
+    public function sortByStatus(Request $request)
+    {
+        $tasks = Task::all();
+
+        if ($tasks->isEmpty()) {
+            $data = [
+                'message' => 'No se econtraron tareas',
+                'status' => 404
+            ];
+            return response()->json($data, 200);
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'order' => 'required|in:asc,desc',
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validacion de ordenamiento',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+
+        $newTasks = $tasks->map(function ($task) {
+            $task->order = $this->getPriority($task->state);
+            return $task;
+        });
+        
+        $sortedTasks = ($request->order === 'asc')
+        ? $newTasks->sortBy('order')  
+        : $newTasks->sortByDesc('order');
+        
+        $data = [
+            'tasks' => $sortedTasks->values()->all(),
+            'status' => 200
+        ];
+    
         return response()->json($data, 200);
     }
 }

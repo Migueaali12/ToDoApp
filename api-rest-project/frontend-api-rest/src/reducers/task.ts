@@ -10,7 +10,9 @@ type Action =
   | { type: 'DELETE_TASK'; payload: { id: number } }
   | { type: 'UPDATE_TASK'; payload: { id: number; task: Task } }
   | { type: 'UPDATE_TASK_STATE'; payload: { id: number; state: TaskState } }
-
+  | { type: 'FILTER_TASKS_BY_STATUS'; payload: { tasks: Task[]} }
+  | { type: 'SORT_TASKS_BY_STATUS'; payload: { tasks: Task[]} }
+  
 interface State {
   tasks: TaskList
 }
@@ -59,6 +61,22 @@ export const taskReducer = (state: State, action: Action): State => {
         ...newState,
         tasks: newState,
       }
+    }
+  }
+
+  if (action.type === 'FILTER_TASKS_BY_STATUS') {
+    const { tasks } = action.payload
+    return {
+      ...state,
+      tasks,
+    }
+  }
+
+  if (action.type === 'SORT_TASKS_BY_STATUS') {
+    const { tasks } = action.payload
+    return {
+     ...state,
+      tasks,
     }
   }
 

@@ -1,9 +1,11 @@
 import { createContext, useReducer } from 'react'
-import { TaskList, Task, TaskState } from '../types'
+import { TaskList, Task, TaskState, FilterStatus } from '../types'
 import { initialState, taskReducer } from '../reducers/task'
 import {
   fetchAddTask,
   fetchDeleteTask,
+  fetchFilteredTasksByStatus,
+  fetchSortedTasksByStatus,
   fetchTasks,
   fetchUpdateTask,
   fetchUpdateTaskState,
@@ -16,6 +18,8 @@ type TaskContextType = {
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
+  filterTaskByStatus: (status: FilterStatus) => void
+  sortTaskByStatus: (order : 'asc' | 'desc') => void
 }
 
 export const TaskContext = createContext<TaskContextType | null>(null)
@@ -27,12 +31,18 @@ export const useTaskReducer = (): {
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
+  filterTaskByStatus: (status: FilterStatus) => void
+  sortTaskByStatus: (order : 'asc' | 'desc') => void
 } => {
   const [{ tasks }, dispatch] = useReducer(taskReducer, initialState)
 
   const getTask = (): void => {
+    //debugger;
     fetchTasks()
       .then(tasks => {
+        if (tasks === null || tasks === undefined) {
+          tasks = []
+        }
         dispatch({ type: 'GET_TASKS', payload: { tasks } })
       })
       .catch(err => console.log(err))
@@ -87,6 +97,28 @@ export const useTaskReducer = (): {
       })
   }
 
+  const filterTaskByStatus = (status: FilterStatus): void => {
+    fetchFilteredTasksByStatus(status)
+      .then(tasks => {
+        if (tasks === null || tasks === undefined) {
+          tasks = []
+        }
+        dispatch({ type: 'FILTER_TASKS_BY_STATUS', payload: { tasks } })
+      })
+      .catch(err => console.log(err))
+  }
+
+  const sortTaskByStatus = (order: 'asc' | 'desc'): void => {
+    fetchSortedTasksByStatus(order)
+    .then(tasks => {
+      if (tasks === null || tasks === undefined) {
+        tasks = []
+      }
+      dispatch({ type: 'SORT_TASKS_BY_STATUS', payload: { tasks } })
+    })
+    .catch(err => console.log(err))
+  }
+
   return {
     tasks,
     getTask,
@@ -94,11 +126,13 @@ export const useTaskReducer = (): {
     deleteTask,
     updateTask,
     updateTaskState,
+    filterTaskByStatus,
+    sortTaskByStatus
   }
 }
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
-  const { tasks, getTask, addTask, deleteTask, updateTask, updateTaskState } =
+  const { tasks, getTask, addTask, deleteTask, updateTask, updateTaskState, filterTaskByStatus, sortTaskByStatus } =
     useTaskReducer()
 
   return (
@@ -110,6 +144,8 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         deleteTask,
         updateTask,
         updateTaskState,
+        filterTaskByStatus,
+        sortTaskByStatus
       }}
     >
       {children}

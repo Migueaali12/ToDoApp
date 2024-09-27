@@ -45,7 +45,7 @@ export function TaskForm({
       <Formik
         initialValues={{ title: '', text: '' }}
         onSubmit={(values, actions) => {
-          debugger;
+          //debugger;
           addTask(values.title, values.text)
           actions.setSubmitting(false)
           onClose()
@@ -86,7 +86,9 @@ export function TaskForm({
 
             <Button
               mt={4}
-              colorScheme="teal"
+              bg="#3182ce"
+              textColor={'#fff'}
+              _hover={{ background: '#225d94' }}
               isLoading={props.isSubmitting}
               type="submit"
             >
