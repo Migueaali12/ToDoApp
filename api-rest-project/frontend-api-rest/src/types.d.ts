@@ -13,6 +13,7 @@ export enum TaskState {
 
 export type TaskList = Task[]
 
-export type FilterStatus = {
+export type Filters = {
   category: 'all' | 'pending' | 'in_progress' | 'completed'
+  sort: 'asc' | 'desc' | 'off'
 }

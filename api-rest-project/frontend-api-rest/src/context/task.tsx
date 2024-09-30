@@ -18,8 +18,7 @@ type TaskContextType = {
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
-  filterTaskByStatus: (status: FilterStatus) => void
-  sortTaskByStatus: (order : 'asc' | 'desc') => void
+  filterTasks: (tasks: TaskList) => void
 }
 
 export const TaskContext = createContext<TaskContextType | null>(null)
@@ -31,13 +30,12 @@ export const useTaskReducer = (): {
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
-  filterTaskByStatus: (status: FilterStatus) => void
-  sortTaskByStatus: (order : 'asc' | 'desc') => void
+  filterTasks: (tasks: TaskList) => void
 } => {
   const [{ tasks }, dispatch] = useReducer(taskReducer, initialState)
 
   const getTask = (): void => {
-    //debugger;
+
     fetchTasks()
       .then(tasks => {
         if (tasks === null || tasks === undefined) {

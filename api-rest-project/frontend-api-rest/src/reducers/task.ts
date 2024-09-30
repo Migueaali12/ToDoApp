@@ -10,8 +10,7 @@ type Action =
   | { type: 'DELETE_TASK'; payload: { id: number } }
   | { type: 'UPDATE_TASK'; payload: { id: number; task: Task } }
   | { type: 'UPDATE_TASK_STATE'; payload: { id: number; state: TaskState } }
-  | { type: 'FILTER_TASKS_BY_STATUS'; payload: { tasks: Task[]} }
-  | { type: 'SORT_TASKS_BY_STATUS'; payload: { tasks: Task[]} }
+  | { type: 'FILTER_TASKS'; payload: { tasks: Task[]} }
   
 interface State {
   tasks: TaskList

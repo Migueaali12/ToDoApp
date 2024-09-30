@@ -12,24 +12,12 @@ use function PHPSTORM_META\map;
 
 class taskController extends Controller
 {
-    public function index()
+    public function getTasks(Request $request)
     {
-        $tasks = Task::all();
-
-        if ($tasks->isEmpty()) {
-            $data = [
-                'message' => 'No se econtraron tareas',
-                'status' => 404
-            ];
-            return response()->json($data, 200);
-        }
-
-        $data = [
-            'tasks' => $tasks,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        $validator = Validator::make($request->all(), [
+            'category' => 'required|in:all,pending,in_progress,completed',
+            'sort' => 'required|asc,desc'
+        ]);
     }
 
     public function store(Request $request)

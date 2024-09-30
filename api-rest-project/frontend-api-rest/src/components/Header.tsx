@@ -1,16 +1,16 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTasks } from '../hooks/useTask'
 import { Button } from '@chakra-ui/react'
 import { TaskModal } from './Modal'
 import { FiltersComponent } from './Filters'
 import { RiArrowUpDownLine } from 'react-icons/ri'
+import { SearchInput } from './Search'
 
 export function Header() {
   const { tasks, getTask, filterTaskByStatus, sortTaskByStatus } = useTasks()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [toggle, setToggle] = useState(false)
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -29,7 +29,7 @@ export function Header() {
       <h1 className="text-center italic p-10 text-xl font-semibold">
         Todo App With React + Laravel Rest Api 📌
       </h1>
-      <main className="flex justify-between max-h-fit">
+      <main className="flex justify-between max-h-fit mb-2">
         {tasks.length > 0 && (
           <FiltersComponent filterFunction={filterTaskByStatus} />
         )}
@@ -52,15 +52,14 @@ export function Header() {
               size="sm"
               _hover={{ background: '#225d94' }}
               textColor={'#fff'}
-              onClick={() => {
-
-              }}
+              onClick={() => {}}
             >
               <RiArrowUpDownLine />
             </Button>
           )}
         </div>
       </main>
+      {tasks.length > 0 && <SearchInput />}
       {isModalOpen && (
         <TaskModal isOpen={isModalOpen} onClose={closeModal} task={null} />
       )}

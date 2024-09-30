@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('task')->group(function () {
+    Route::post('getTasks', [taskController::class, 'getTasks']);
     Route::patch('/update-field-task/{id}', [taskController::class, 'updateField']);
     Route::post('/filter-status', [taskController::class, 'filterByStatus']);
     Route::post('/sort-status', [taskController::class, 'sortByStatus']);
