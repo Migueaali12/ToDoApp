@@ -12,6 +12,7 @@ export function FiltersProvider({ children }: { children: React.ReactNode }) {
   const [filters, setFilters] = useState<Filters>({
     category: 'all',
     sort: 'off',
+    search: ''
   })
 
   return (

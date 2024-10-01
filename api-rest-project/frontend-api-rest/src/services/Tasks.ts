@@ -4,7 +4,9 @@ export async function fetchSetTasks(filters: Filters) {
   const body = {
     category: filters.category,
     sort: filters.sort,
+    ...(filters.search !== '' && { search: filters.search }),
   }
+
   const res = await fetch('http://127.0.0.1:8000/api/task/getTasks', {
     method: 'POST',
     headers: {
@@ -13,7 +15,7 @@ export async function fetchSetTasks(filters: Filters) {
     body: JSON.stringify(body),
   })
   const data = await res.json()
-  return data.task
+  return data.tasks
 }
 
 export async function fetchAddTask(title: string, text: string) {

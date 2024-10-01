@@ -16,4 +16,5 @@ export type TaskList = Task[]
 export type Filters = {
   category: 'all' | 'pending' | 'in_progress' | 'completed'
   sort: 'asc' | 'desc' | 'off'
+  search: string
 }

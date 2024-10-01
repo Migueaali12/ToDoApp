@@ -40,7 +40,7 @@ class taskController extends Controller
     public function trueResponse($tasks)
     {
         $data = [
-            'message' => $tasks,
+            'tasks' => $tasks,
             'status' => 200
         ];
         return response()->json($data, 200);
@@ -65,7 +65,8 @@ class taskController extends Controller
 
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:all,pending,in_progress,completed',
-            'sort' => 'required|in:asc,desc,off'
+            'sort' => 'required|in:asc,desc,off',
+            'search' => 'nullable|string'
         ]);
 
         $validationErrorResponse = $this->checkValidator($validator);
@@ -77,6 +78,10 @@ class taskController extends Controller
 
         if ($request->category !== 'all') {
             $query->where('state', $request->category);
+        }
+
+        if (!empty($request->search)) {
+            $query->where('title', 'like', '%' . $request->search . '%'); 
         }
 
         $tasks = $query->get();

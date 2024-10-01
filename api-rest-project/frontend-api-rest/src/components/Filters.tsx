@@ -5,7 +5,7 @@ import { Filters } from '../types'
 import { useFilters } from '../hooks/useFilters'
 
 export function FiltersComponent() {
-  const { setFilters } = useFilters()
+  const { filters, setFilters } = useFilters()
   return (
     <section>
       <Select
@@ -14,8 +14,8 @@ export function FiltersComponent() {
         rounded={'xl'}
         onChange={event => {
           setFilters({
-            category: event.target.value as Filters['category'],
-            sort: 'off',
+            ...filters,
+            category: event.target.value as Filters['category']
           })
         }}
       >
