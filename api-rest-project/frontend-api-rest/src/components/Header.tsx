@@ -7,10 +7,12 @@ import { TaskModal } from './Modal'
 import { FiltersComponent } from './Filters'
 import { RiArrowUpDownLine } from 'react-icons/ri'
 import { SearchInput } from './Search'
+import { useFilters } from '../hooks/useFilters'
 
 export function Header() {
-  const { tasks, getTask, filterTaskByStatus, sortTaskByStatus } = useTasks()
+  const { tasks, setTask } = useTasks()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { filters } = useFilters()
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -21,8 +23,8 @@ export function Header() {
   }
 
   useEffect(() => {
-    getTask()
-  }, [])
+    setTask({ category: 'all', sort: 'off' })
+  }, [filters])
 
   return (
     <section className="max-w-screen-lg place-self-center pb-16">
@@ -31,7 +33,7 @@ export function Header() {
       </h1>
       <main className="flex justify-between max-h-fit mb-2">
         {tasks.length > 0 && (
-          <FiltersComponent filterFunction={filterTaskByStatus} />
+          <FiltersComponent />
         )}
         <div>
           <Button

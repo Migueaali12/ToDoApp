@@ -1,16 +1,19 @@
-import { FilterStatus, Task, TaskState } from '../types'
+import { Filters, Task, TaskState } from '../types'
 
-interface tasksReponse {
-  tasks: Task[]
-  status: number
-}
-
-export async function fetchTasks() {
-  const res = await fetch('http://127.0.0.1:8000/api/task', {
-    method: 'GET',
+export async function fetchSetTasks(filters: Filters) {
+  const body = {
+    category: filters.category,
+    sort: filters.sort,
+  }
+  const res = await fetch('http://127.0.0.1:8000/api/task/getTasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
   })
-  const data: tasksReponse = await res.json()
-  return data.tasks
+  const data = await res.json()
+  return data.task
 }
 
 export async function fetchAddTask(title: string, text: string) {
@@ -74,30 +77,4 @@ export async function fetchUpdateTask(taskId: number, task: Task) {
     return true
   }
   return false
-}
-
-export async function fetchFilteredTasksByStatus(status: FilterStatus) {
-  const body = { state: status }
-  const res = await fetch('http://127.0.0.1:8000/api/task/filter-status', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-  const data: tasksReponse = await res.json()
-  return data.tasks
-}
-
-export async function fetchSortedTasksByStatus(order: 'asc' | 'desc') {
-  const body = { "order" : order }
-  const res = await fetch('http://127.0.0.1:8000/api/task/sort-status', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-  const data: tasksReponse = await res.json()
-  return data.tasks
 }

@@ -1,13 +1,11 @@
 /* eslint-disable react/react-in-jsx-scope */
 
 import { Select } from '@chakra-ui/react'
-import { Task, FilterStatus } from '../types'
+import { Filters } from '../types'
+import { useFilters } from '../hooks/useFilters'
 
-export function FiltersComponent({
-  filterFunction,
-}: {
-  filterFunction: (status: FilterStatus) => void
-}) {
+export function FiltersComponent() {
+  const { setFilters } = useFilters()
   return (
     <section>
       <Select
@@ -15,7 +13,10 @@ export function FiltersComponent({
         size={'sm'}
         rounded={'xl'}
         onChange={event => {
-          filterFunction(event.target.value as Task['state'])
+          setFilters({
+            category: event.target.value as Filters['category'],
+            sort: 'off',
+          })
         }}
       >
         <option value="all">Todos</option>

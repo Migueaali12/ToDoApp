@@ -5,7 +5,7 @@ export const initialState: State = {
 }
 
 type Action =
-  | { type: 'GET_TASKS'; payload: { tasks: Task[] } }
+  | { type: 'SET_TASKS'; payload: { tasks: Task[] } }
   | { type: 'ADD_TASK'; payload: { task: Task } }
   | { type: 'DELETE_TASK'; payload: { id: number } }
   | { type: 'UPDATE_TASK'; payload: { id: number; task: Task } }
@@ -17,7 +17,7 @@ interface State {
 }
 
 export const taskReducer = (state: State, action: Action): State => {
-  if (action.type === 'GET_TASKS') {
+  if (action.type === 'SET_TASKS') {
     const { tasks } = action.payload
     return {
       ...state,
@@ -60,22 +60,6 @@ export const taskReducer = (state: State, action: Action): State => {
         ...newState,
         tasks: newState,
       }
-    }
-  }
-
-  if (action.type === 'FILTER_TASKS_BY_STATUS') {
-    const { tasks } = action.payload
-    return {
-      ...state,
-      tasks,
-    }
-  }
-
-  if (action.type === 'SORT_TASKS_BY_STATUS') {
-    const { tasks } = action.payload
-    return {
-     ...state,
-      tasks,
     }
   }
 

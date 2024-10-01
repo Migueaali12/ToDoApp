@@ -1,47 +1,43 @@
 import { createContext, useReducer } from 'react'
-import { TaskList, Task, TaskState, FilterStatus } from '../types'
+import { TaskList, Task, TaskState, Filters } from '../types'
 import { initialState, taskReducer } from '../reducers/task'
 import {
   fetchAddTask,
   fetchDeleteTask,
-  fetchFilteredTasksByStatus,
-  fetchSortedTasksByStatus,
-  fetchTasks,
+  fetchSetTasks,
   fetchUpdateTask,
   fetchUpdateTaskState,
 } from '../services/Tasks'
 
 type TaskContextType = {
   tasks: TaskList
-  getTask: () => void
+  setTask: (filters: Filters) => void
   addTask: (title: string, text: string) => void
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
-  filterTasks: (tasks: TaskList) => void
 }
 
 export const TaskContext = createContext<TaskContextType | null>(null)
 
 export const useTaskReducer = (): {
   tasks: TaskList
-  getTask: () => void
+  setTask: (filters: Filters) => void
   addTask: (title: string, text: string) => void
   deleteTask: (id: number) => void
   updateTask: (id: number, task: Task) => void
   updateTaskState: (id: number, state: TaskState) => void
-  filterTasks: (tasks: TaskList) => void
+  
 } => {
   const [{ tasks }, dispatch] = useReducer(taskReducer, initialState)
 
-  const getTask = (): void => {
-
-    fetchTasks()
+  const setTask = (filters : Filters): void => {
+    fetchSetTasks(filters)
       .then(tasks => {
         if (tasks === null || tasks === undefined) {
           tasks = []
         }
-        dispatch({ type: 'GET_TASKS', payload: { tasks } })
+        dispatch({ type: 'SET_TASKS', payload: { tasks } })
       })
       .catch(err => console.log(err))
   }
@@ -95,55 +91,29 @@ export const useTaskReducer = (): {
       })
   }
 
-  const filterTaskByStatus = (status: FilterStatus): void => {
-    fetchFilteredTasksByStatus(status)
-      .then(tasks => {
-        if (tasks === null || tasks === undefined) {
-          tasks = []
-        }
-        dispatch({ type: 'FILTER_TASKS_BY_STATUS', payload: { tasks } })
-      })
-      .catch(err => console.log(err))
-  }
-
-  const sortTaskByStatus = (order: 'asc' | 'desc'): void => {
-    fetchSortedTasksByStatus(order)
-    .then(tasks => {
-      if (tasks === null || tasks === undefined) {
-        tasks = []
-      }
-      dispatch({ type: 'SORT_TASKS_BY_STATUS', payload: { tasks } })
-    })
-    .catch(err => console.log(err))
-  }
-
   return {
     tasks,
-    getTask,
+    setTask,
     addTask,
     deleteTask,
     updateTask,
     updateTaskState,
-    filterTaskByStatus,
-    sortTaskByStatus
   }
 }
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
-  const { tasks, getTask, addTask, deleteTask, updateTask, updateTaskState, filterTaskByStatus, sortTaskByStatus } =
+  const { tasks, setTask, addTask, deleteTask, updateTask, updateTaskState } =
     useTaskReducer()
 
   return (
     <TaskContext.Provider
       value={{
         tasks,
-        getTask,
+        setTask,
         addTask,
         deleteTask,
         updateTask,
-        updateTaskState,
-        filterTaskByStatus,
-        sortTaskByStatus
+        updateTaskState
       }}
     >
       {children}

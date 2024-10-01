@@ -12,12 +12,94 @@ use function PHPSTORM_META\map;
 
 class taskController extends Controller
 {
+    public function checkEmptyTasks($tasks)
+    {
+        if ($tasks->isEmpty()) {
+            $data = [
+                'message' => 'No se econtraron tareas',
+                'status' => 404
+            ];
+            return response()->json($data, 200);
+        }
+        return null;
+    }
+
+    public function checkValidator($validator)
+    {
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de datos en la petición',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+        return null;
+    }
+
+    public function trueResponse($tasks)
+    {
+        $data = [
+            'message' => $tasks,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function getPriority($state)
+    {
+        if ($state === 'pending') {
+            return 1;
+        } elseif ($state === 'in_progress') {
+            return 2;
+        } elseif ($state === 'completed') {
+            return 3;
+        } else {
+            return 4;
+        }
+    }
+
+
     public function getTasks(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:all,pending,in_progress,completed',
-            'sort' => 'required|asc,desc'
+            'sort' => 'required|in:asc,desc,off'
         ]);
+
+        $validationErrorResponse = $this->checkValidator($validator);
+        if ($validationErrorResponse) {
+            return $validationErrorResponse;
+        }
+
+        $query = Task::query();
+
+        if ($request->category !== 'all') {
+            $query->where('state', $request->category);
+        }
+
+        $tasks = $query->get();
+
+        $emptyResponse = $this->checkEmptyTasks($tasks);
+        if ($emptyResponse) {
+            return $emptyResponse;
+        }
+
+        if ($request->sort !== 'off') {
+
+            $newTasks = $tasks->map(function ($task) {
+                $task->order = $this->getPriority($task->state);
+                return $task;
+            });
+
+            $sortedTasks = ($request->sort === 'asc')
+                ? $newTasks->sortBy('order')
+                : $newTasks->sortByDesc('order');
+            $tasks = $sortedTasks->values()->all();
+        }
+
+        return $this->trueResponse($tasks);
     }
 
     public function store(Request $request)
@@ -185,106 +267,6 @@ class taskController extends Controller
             'task' => $task,
             'status' => 200
         ];
-        return response()->json($data, 200);
-    }
-
-    public function filterByStatus(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'state' => 'required|in:all,pending,in_progress,completed',
-        ]);
-
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validacion de estados',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        if ($request->state === 'all') {
-            $tasks = Task::all();
-
-            $data = [
-                'tasks' => $tasks,
-                'status' => 200
-            ];
-    
-            return response()->json($data, 200);
-        }
-
-
-        $tasks = Task::where('state', $request->state)->get();
-
-        if ($tasks->isEmpty()) {
-            $data = [
-                'message' => 'No se encontraron tareas con el estado ' . $request,
-                'status' => 404
-            ];
-            return response()->json($data, 200);
-        }
-
-        $data = [
-            'tasks' => $tasks,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
-    }
-
-    public function getPriority($state)
-    {
-        if ($state === 'pending') {
-            return 1;
-        } elseif ($state === 'in_progress') {
-            return 2;
-        } elseif ($state === 'completed') {
-            return 3;
-        } else {
-            return 4;
-        }
-    }
-
-    public function sortByStatus(Request $request)
-    {
-        $tasks = Task::all();
-
-        if ($tasks->isEmpty()) {
-            $data = [
-                'message' => 'No se econtraron tareas',
-                'status' => 404
-            ];
-            return response()->json($data, 200);
-        }
-        
-        $validator = Validator::make($request->all(), [
-            'order' => 'required|in:asc,desc',
-        ]);
-
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validacion de ordenamiento',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        $newTasks = $tasks->map(function ($task) {
-            $task->order = $this->getPriority($task->state);
-            return $task;
-        });
-        
-        $sortedTasks = ($request->order === 'asc')
-        ? $newTasks->sortBy('order')  
-        : $newTasks->sortByDesc('order');
-        
-        $data = [
-            'tasks' => $sortedTasks->values()->all(),
-            'status' => 200
-        ];
-    
         return response()->json($data, 200);
     }
 }

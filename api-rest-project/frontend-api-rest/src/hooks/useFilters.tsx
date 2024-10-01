@@ -1,6 +1,5 @@
 import { useContext } from "react"
 import { FiltersContext } from "../context/filters"
-import { TaskList } from "../types"
 
 export const useFilters = () => {
     const context = useContext(FiltersContext)
@@ -10,6 +9,6 @@ export const useFilters = () => {
     }
 
     const { filters, setFilters } = context
-    
+
     return { filters, setFilters }
 }
