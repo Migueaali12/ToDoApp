@@ -1,5 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTasks } from '../hooks/useTask'
 import { Button, Input, InputGroup, InputLeftElement } from '@chakra-ui/react'
@@ -37,7 +35,6 @@ export function Header() {
   )
 
   useEffect(() => {
-
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
@@ -51,11 +48,17 @@ export function Header() {
   }, [filters])
 
   return (
-    <section className="max-w-screen-lg place-self-center pb-16">
+    <section className="max-w-sm md:max-w-screen-xl place-self-center pb-16">
       <h1 className="text-center italic p-10 text-xl font-semibold">
         Todo App With React + Laravel Rest Api 📌
       </h1>
-      <main className="flex justify-between max-h-fit mb-2">
+      <main
+        className={
+          tasks.length > 0
+            ? 'flex max-h-fit mb-2 justify-between '
+            : 'flex max-h-fit mb-2 justify-center'
+        }
+      >
         {tasks.length > 0 && <FiltersComponent />}
         <div>
           <Button

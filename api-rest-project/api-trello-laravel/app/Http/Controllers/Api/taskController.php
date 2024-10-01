@@ -115,13 +115,9 @@ class taskController extends Controller
             'text' => 'required'
         ]);
 
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validacion de datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
+        $validationErrorResponse = $this->checkValidator($validator);
+        if ($validationErrorResponse) {
+            return $validationErrorResponse;
         }
 
         $task = Task::create([
@@ -138,12 +134,7 @@ class taskController extends Controller
             return response()->json($data, 500);
         }
 
-        $data = [
-            'task' => $task,
-            'status' => 201
-        ];
-
-        return response()->json($data, 201);
+        return $this->trueResponse($task);
     }
 
     public function show($id)
@@ -158,12 +149,7 @@ class taskController extends Controller
             return response()->json($data, 404);
         }
 
-        $data = [
-            'task' => $task,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return $this->trueResponse($task);
     }
 
     public function destroy($id)
@@ -206,13 +192,9 @@ class taskController extends Controller
             'text' => 'required'
         ]);
 
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validacion de datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
+        $validationErrorResponse = $this->checkValidator($validator);
+        if ($validationErrorResponse) {
+            return $validationErrorResponse;
         }
 
         $task->title = $request->title;
@@ -220,13 +202,7 @@ class taskController extends Controller
         $task->text = $request->text;
         $task->save();
 
-        $data = [
-            'message' => 'Tarea actualizado exitosamente',
-            'task' => $task,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return $this->trueResponse($task);
     }
 
     public function updateField($id, Request $request)
@@ -246,13 +222,9 @@ class taskController extends Controller
             'state' => 'in:pending,in_progress,completed',
         ]);
 
-        if ($validator->fails()) {
-            $data = [
-                'message' => 'Error en la validacion de datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
+        $validationErrorResponse = $this->checkValidator($validator);
+        if ($validationErrorResponse) {
+            return $validationErrorResponse;
         }
 
         if ($request->has('title')) {
@@ -267,11 +239,6 @@ class taskController extends Controller
 
         $task->save();
 
-        $data = [
-            'message' => 'Propiedad de la tarea actualizada',
-            'task' => $task,
-            'status' => 200
-        ];
-        return response()->json($data, 200);
+        return $this->trueResponse($task);
     }
 }

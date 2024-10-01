@@ -6,8 +6,8 @@ import { useTasks } from '../hooks/useTask'
 
 export function TasksList() {
   const { tasks } = useTasks()
-
-  if (tasks.length < 0) {
+  
+  if (tasks.length === 0) {
     return (
       <div className="place-self-center font-medium">
         <p>No se encontraron tareas</p>

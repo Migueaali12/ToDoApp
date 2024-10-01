@@ -92,7 +92,7 @@ export function TaskForm({
               isLoading={props.isSubmitting}
               type="submit"
             >
-              Enviar
+              Crear Tarea
             </Button>
           </Form>
         )}
@@ -150,7 +150,7 @@ export function TaskForm({
               isLoading={props.isSubmitting}
               type="submit"
             >
-              Enviar
+              Actualizar Tarea
             </Button>
           </Form>
         )}

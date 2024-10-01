@@ -48,6 +48,7 @@ function getTaskColor(state: string, styleProp: string) {
 export function TaskElement({ task }: { task: Task }) {
   const { deleteTask, updateTaskState } = useTasks()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -55,6 +56,11 @@ export function TaskElement({ task }: { task: Task }) {
 
   const closeModal = () => {
     setIsModalOpen(false)
+  }
+
+  const handleClick = () => {
+    setLoading(true)
+    deleteTask(task.id)
   }
 
   return (
@@ -79,7 +85,8 @@ export function TaskElement({ task }: { task: Task }) {
                     size={'xs'}
                     _hover={{ background: '#225d94' }}
                     marginRight={'5px'}
-                    onClick={() => deleteTask(task.id)}
+                    isLoading={loading}
+                    onClick={handleClick}
                   >
                     <Icon as={MdDelete} color={'white'} />
                   </Button>
